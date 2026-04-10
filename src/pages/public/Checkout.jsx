@@ -8,6 +8,13 @@ import api from '../../utils/api';
 
 const TAX_RATE = 0.03;
 
+const PAYMENT_METHODS = [
+  { id: 'cod', name: 'Cash on Delivery', icon: '💵', description: 'Pay when you receive your order' },
+  { id: 'momo', name: 'Mobile Money', icon: '📱', description: 'MTN or Vodafone Mobile Money' },
+  { id: 'card', name: 'Card Payment', icon: '💳', description: 'Visa, Mastercard, or Amex' },
+  { id: 'bank', name: 'Bank Transfer', icon: '🏦', description: 'Direct bank account transfer' }
+];
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
@@ -20,6 +27,7 @@ const Checkout = () => {
   const [orderSuccess, setOrderSuccess] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [couponError, setCouponError] = useState('');
+  const [selectedPayment, setSelectedPayment] = useState('cod');
 
   const [shippingAddress, setShippingAddress] = useState({
     fullName: user?.name || '',
@@ -80,7 +88,6 @@ const Checkout = () => {
   }
 
   const subtotal = getCartTotal();
-  const shipping = 0;
   const discount = appliedCoupon?.discount || 0;
   const tax = (subtotal - discount) * TAX_RATE;
   const total = subtotal - discount + tax;
@@ -154,7 +161,7 @@ const Checkout = () => {
           image: item.product.images?.[0]?.url || ''
         })),
         shippingAddress,
-        paymentMethod: 'cod',
+        paymentMethod: selectedPayment,
         couponCode: appliedCoupon?.code
       });
 
@@ -206,12 +213,13 @@ const Checkout = () => {
               
               <h2 className="text-2xl font-serif text-ivory-100 mb-2">Order Confirmed!</h2>
               <p className="text-ivory-100/60 mb-6">
-                Thank you for your order. We'll send you a confirmation email shortly.
+                Thank you for your order. {selectedPayment === 'cod' ? "You'll pay when you receive your order." : "You'll receive payment instructions shortly."}
               </p>
               
               <div className="bg-charcoal-200/50 rounded-xl p-4 mb-6">
                 <p className="text-ivory-100/50 text-sm mb-1">Order Number</p>
                 <p className="text-gold-300 font-serif text-lg">#{orderSuccess._id.slice(-8).toUpperCase()}</p>
+                <p className="text-ivory-100/70 text-sm mt-2">{formatCurrency(total)} via {PAYMENT_METHODS.find(p => p.id === selectedPayment)?.name}</p>
               </div>
 
               <div className="flex gap-3">
@@ -255,7 +263,7 @@ const Checkout = () => {
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                   currentStep >= 2 ? 'bg-gold-300 text-charcoal-300' : 'bg-ivory-100/10'
                 }`}>2</div>
-                <span className="text-sm font-light hidden sm:block">Review</span>
+                <span className="text-sm font-light hidden sm:block">Payment</span>
               </div>
             </div>
           </div>
@@ -360,24 +368,7 @@ const Checkout = () => {
                           <option value="Nigeria">Nigeria</option>
                           <option value="Togo">Togo</option>
                           <option value="Ivory Coast">Ivory Coast</option>
-                          <option value="United States">United States</option>
-                          <option value="United Kingdom">United Kingdom</option>
                         </select>
-                      </div>
-
-                      <div className="pt-4 border-t border-ivory-100/10">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            id="cod"
-                            checked
-                            readOnly
-                            className="w-4 h-4 rounded border border-ivory-100/30 bg-charcoal-200/50 accent-gold-300"
-                          />
-                          <label htmlFor="cod" className="text-ivory-100/70 text-sm font-light">
-                            Cash on Delivery (COD)
-                          </label>
-                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -387,47 +378,108 @@ const Checkout = () => {
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="bg-charcoal-100/50 backdrop-blur-sm border border-ivory-100/10 rounded-2xl p-6 lg:p-8"
+                    className="space-y-6"
                   >
-                    <h2 className="text-xl font-serif text-ivory-100 mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 bg-gold-300/20 text-gold-300 rounded-full flex items-center justify-center text-sm">2</span>
-                      Review Your Order
-                    </h2>
-
                     {/* Shipping Summary */}
-                    <div className="bg-charcoal-200/30 rounded-xl p-4 mb-6">
-                      <p className="text-ivory-100/50 text-xs uppercase tracking-wide mb-2">Shipping to</p>
-                      <p className="text-ivory-100 font-medium">{shippingAddress.fullName}</p>
-                      <p className="text-ivory-100/70 text-sm">{shippingAddress.street}</p>
-                      <p className="text-ivory-100/70 text-sm">{shippingAddress.city}, {shippingAddress.state} {shippingAddress.zipCode}</p>
-                      <p className="text-ivory-100/70 text-sm">{shippingAddress.phone}</p>
-                      <button
-                        type="button"
-                        onClick={() => setCurrentStep(1)}
-                        className="text-gold-300 text-sm mt-2 hover:text-gold-200 transition-colors"
-                      >
-                        Edit
-                      </button>
+                    <div className="bg-charcoal-100/50 backdrop-blur-sm border border-ivory-100/10 rounded-2xl p-6 lg:p-8">
+                      <h2 className="text-xl font-serif text-ivory-100 mb-6 flex items-center gap-3">
+                        <span className="w-8 h-8 bg-gold-300/20 text-gold-300 rounded-full flex items-center justify-center text-sm">1</span>
+                        Shipping Address
+                        <button
+                          type="button"
+                          onClick={() => setCurrentStep(1)}
+                          className="ml-auto text-gold-300 text-sm hover:text-gold-200 transition-colors"
+                        >
+                          Edit
+                        </button>
+                      </h2>
+                      <div className="bg-charcoal-200/30 rounded-xl p-4">
+                        <p className="text-ivory-100 font-medium">{shippingAddress.fullName}</p>
+                        <p className="text-ivory-100/70 text-sm">{shippingAddress.street}</p>
+                        <p className="text-ivory-100/70 text-sm">{shippingAddress.city}, {shippingAddress.state} {shippingAddress.zipCode}</p>
+                        <p className="text-ivory-100/70 text-sm">{shippingAddress.phone}</p>
+                      </div>
                     </div>
 
-                    {/* Order Items */}
-                    <div className="space-y-4">
-                      {cart.map((item) => (
-                        <div key={item.product._id} className="flex gap-4 p-4 bg-charcoal-200/30 rounded-xl">
-                          <div className="w-20 h-20 bg-charcoal-100 rounded-lg overflow-hidden flex-shrink-0">
-                            {item.product.images?.[0]?.url ? (
-                              <img src={item.product.images[0].url} alt={item.product.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-charcoal-400">✦</div>
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-serif text-ivory-100 text-sm">{item.product.name}</h3>
-                            <p className="text-ivory-100/50 text-xs mt-1">Qty: {item.quantity}</p>
-                            <p className="text-gold-300 font-medium mt-1">{formatCurrency(item.product.price * item.quantity)}</p>
-                          </div>
+                    {/* Payment Methods */}
+                    <div className="bg-charcoal-100/50 backdrop-blur-sm border border-ivory-100/10 rounded-2xl p-6 lg:p-8">
+                      <h2 className="text-xl font-serif text-ivory-100 mb-6 flex items-center gap-3">
+                        <span className="w-8 h-8 bg-gold-300/20 text-gold-300 rounded-full flex items-center justify-center text-sm">2</span>
+                        Payment Method
+                      </h2>
+                      
+                      <div className="space-y-3">
+                        {PAYMENT_METHODS.map((method) => (
+                          <label
+                            key={method.id}
+                            className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
+                              selectedPayment === method.id
+                                ? 'border-gold-300 bg-gold-300/10'
+                                : 'border-ivory-100/10 hover:border-ivory-100/30'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="payment"
+                              value={method.id}
+                              checked={selectedPayment === method.id}
+                              onChange={(e) => setSelectedPayment(e.target.value)}
+                              className="sr-only"
+                            />
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              selectedPayment === method.id
+                                ? 'border-gold-300 bg-gold-300'
+                                : 'border-ivory-100/30'
+                            }`}>
+                              {selectedPayment === method.id && (
+                                <div className="w-2 h-2 rounded-full bg-charcoal-300" />
+                              )}
+                            </div>
+                            <span className="text-2xl">{method.icon}</span>
+                            <div className="flex-1">
+                              <p className="text-ivory-100 font-medium">{method.name}</p>
+                              <p className="text-ivory-100/50 text-sm">{method.description}</p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+
+                      {/* Payment Instructions */}
+                      {selectedPayment === 'momo' && (
+                        <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                          <p className="text-blue-400 text-sm mb-2">Mobile Money Payment Instructions:</p>
+                          <p className="text-ivory-100/70 text-sm">1. You'll receive an MoMo payment request on your phone</p>
+                          <p className="text-ivory-100/70 text-sm">2. Enter your PIN to confirm</p>
+                          <p className="text-ivory-100/70 text-sm">3. Payment will be deducted from your Mobile Money account</p>
                         </div>
-                      ))}
+                      )}
+
+                      {selectedPayment === 'card' && (
+                        <div className="mt-6 p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+                          <p className="text-purple-400 text-sm mb-2">Card Payment Instructions:</p>
+                          <p className="text-ivory-100/70 text-sm">1. Click "Place Order" to proceed to secure payment</p>
+                          <p className="text-ivory-100/70 text-sm">2. Enter your card details on the secure payment page</p>
+                          <p className="text-ivory-100/70 text-sm">3. Payment is processed securely via Stripe</p>
+                        </div>
+                      )}
+
+                      {selectedPayment === 'bank' && (
+                        <div className="mt-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                          <p className="text-emerald-400 text-sm mb-2">Bank Transfer Instructions:</p>
+                          <p className="text-ivory-100/70 text-sm">Bank: Ghana Commercial Bank</p>
+                          <p className="text-ivory-100/70 text-sm">Account Name: Luxury Perfume</p>
+                          <p className="text-ivory-100/70 text-sm">Account Number: 1234567890</p>
+                          <p className="text-ivory-100/50 text-sm mt-2">Use your order number as payment reference</p>
+                        </div>
+                      )}
+
+                      {selectedPayment === 'cod' && (
+                        <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+                          <p className="text-yellow-400 text-sm mb-2">Cash on Delivery:</p>
+                          <p className="text-ivory-100/70 text-sm">Pay in cash when your order is delivered to your doorstep.</p>
+                          <p className="text-ivory-100/50 text-sm mt-2">Have the exact amount ready for a smooth delivery experience.</p>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -540,14 +592,14 @@ const Checkout = () => {
                         Processing...
                       </span>
                     ) : currentStep === 1 ? (
-                      'Continue to Review'
+                      'Continue to Payment'
                     ) : (
                       `Place Order - ${formatCurrency(total)}`
                     )}
                   </button>
 
                   <p className="text-center text-ivory-100/40 text-xs mt-4">
-                    {currentStep === 1 ? 'You can review your order on the next step' : 'Your order will be confirmed via email'}
+                    {currentStep === 1 ? 'You can select payment method on the next step' : `Pay with ${PAYMENT_METHODS.find(p => p.id === selectedPayment)?.name}`}
                   </p>
                 </div>
               </div>
