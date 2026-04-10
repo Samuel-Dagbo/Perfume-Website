@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { formatCurrency } from '../../utils/currency';
 import api from '../../utils/api';
 import useAnalytics from '../../hooks/useAnalytics';
+import LocationPicker from '../../components/checkout/LocationPicker';
 
 const TAX_RATE = 0.03;
 
@@ -70,8 +71,7 @@ const Checkout = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [couponError, setCouponError] = useState('');
   const [selectedPayment, setSelectedPayment] = useState('cod');
-  const [showMapsModal, setShowMapsModal] = useState(false);
-  const [locationSearch, setLocationSearch] = useState('');
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState({
     fullName: user?.name || '',
@@ -228,27 +228,30 @@ const Checkout = () => {
     }
   };
 
-  const openGoogleMaps = () => {
-    const searchQuery = encodeURIComponent(`${shippingAddress.city || ''}, ${shippingAddress.state || ''}, Ghana`);
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
-    window.open(mapsUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-  };
+  const handleLocationSelect = (address) => {
+    const parts = address.split(',').map(p => p.trim()).filter(Boolean);
+    
+    let street = '';
+    let city = '';
+    let state = '';
 
-  const handleMapsReturn = () => {
-    const address = prompt('Paste the full address from Google Maps here:');
-    if (address) {
-      const parts = address.split(',').map(p => p.trim());
-      if (parts.length >= 2) {
-        setShippingAddress(prev => ({
-          ...prev,
-          street: parts.slice(0, 2).join(', '),
-          city: parts[parts.length - 2] || '',
-          state: parts[parts.length - 1] || ''
-        }));
-      } else if (parts.length === 1) {
-        setShippingAddress(prev => ({ ...prev, street: parts[0] }));
-      }
+    if (parts.length >= 3) {
+      street = parts.slice(0, 2).join(', ');
+      city = parts[parts.length - 2] || '';
+      state = parts[parts.length - 1] || '';
+    } else if (parts.length === 2) {
+      street = parts[0];
+      city = parts[1];
+    } else if (parts.length === 1) {
+      street = parts[0];
     }
+
+    setShippingAddress(prev => ({
+      ...prev,
+      street: street || prev.street,
+      city: city || prev.city,
+      state: state || prev.state
+    }));
   };
 
   const inputClass = (hasError) => `
@@ -314,113 +317,12 @@ const Checkout = () => {
         )}
       </AnimatePresence>
 
-      {/* Google Maps Modal */}
-      <AnimatePresence>
-        {showMapsModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-charcoal-500/95 backdrop-blur-xl"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="bg-charcoal-100 border border-ivory-100/10 rounded-3xl p-8 max-w-2xl w-full"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-serif text-ivory-100">Search Delivery Location</h3>
-                  <p className="text-ivory-100/50 text-sm mt-1">Find your address on Google Maps</p>
-                </div>
-                <button
-                  onClick={() => setShowMapsModal(false)}
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-ivory-100/50 hover:text-ivory-100 hover:bg-charcoal-200/50 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm text-ivory-100/70 mb-2">Search for your location</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="e.g., Accra Mall, Airport, East Legon..."
-                    value={locationSearch}
-                    onChange={(e) => setLocationSearch(e.target.value)}
-                    className="w-full px-5 py-4 pl-12 bg-charcoal-200/50 border border-ivory-100/10 text-ivory-100 rounded-xl focus:outline-none focus:border-gold-300/50 text-base"
-                  />
-                  <svg className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-ivory-100/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-              </div>
-
-              <div className="bg-charcoal-200/30 rounded-xl p-6 mb-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gold-300/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6 text-gold-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-ivory-100/70 text-sm mb-2">How it works:</p>
-                    <ol className="text-ivory-100/50 text-sm space-y-1 list-decimal list-inside">
-                      <li>Click "Open Google Maps" below</li>
-                      <li>Search and navigate to your delivery location</li>
-                      <li>Click on your exact location on the map</li>
-                      <li>Click "Copy" to copy the full address</li>
-                      <li>Paste it in the field below the map</li>
-                    </ol>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm text-ivory-100/70 mb-2">Or paste your address here</label>
-                <textarea
-                  placeholder="Paste the full address copied from Google Maps..."
-                  rows={3}
-                  className="w-full px-5 py-4 bg-charcoal-200/50 border border-ivory-100/10 text-ivory-100 rounded-xl focus:outline-none focus:border-gold-300/50 text-base resize-none"
-                  onChange={(e) => {
-                    const address = e.target.value;
-                    const parts = address.split(',').map(p => p.trim()).filter(Boolean);
-                    if (parts.length >= 2) {
-                      setShippingAddress(prev => ({
-                        ...prev,
-                        street: parts.slice(0, 2).join(', '),
-                        city: parts[parts.length - 2] || '',
-                        state: parts[parts.length - 1] || ''
-                      }));
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <button
-                  onClick={openGoogleMaps}
-                  className="flex-1 py-4 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-xl hover:bg-blue-500/30 transition-colors font-medium flex items-center justify-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                  Open Google Maps
-                </button>
-                <button
-                  onClick={() => setShowMapsModal(false)}
-                  className="flex-1 btn-primary rounded-xl py-4"
-                >
-                  Confirm Location
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Location Picker */}
+      <LocationPicker 
+        isOpen={showLocationPicker}
+        onClose={() => setShowLocationPicker(false)}
+        onSelect={handleLocationSelect}
+      />
 
       <section className="py-12 lg:py-16">
         <div className="container mx-auto px-6 lg:px-16">
@@ -506,7 +408,7 @@ const Checkout = () => {
                           <label className="block text-sm text-ivory-100/70">Street Address</label>
                           <button
                             type="button"
-                            onClick={() => setShowMapsModal(true)}
+                            onClick={() => setShowLocationPicker(true)}
                             className="text-xs text-gold-300 hover:text-gold-200 flex items-center gap-1 transition-colors"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -526,7 +428,7 @@ const Checkout = () => {
                           />
                           <button
                             type="button"
-                            onClick={() => setShowMapsModal(true)}
+                            onClick={() => setShowLocationPicker(true)}
                             className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-ivory-100/40 hover:text-gold-300 transition-colors"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
