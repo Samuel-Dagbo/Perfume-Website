@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
+import { formatCurrency } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -191,12 +192,12 @@ const ProductDetails = () => {
 
             {/* Price */}
             <div className="flex items-baseline gap-4 mb-8">
-              <span className="text-4xl font-serif text-ivory-100">${product.price}</span>
+              <span className="text-4xl font-serif text-ivory-100">{formatCurrency(product.price)}</span>
               {product.originalPrice && (
                 <>
-                  <span className="text-xl text-ivory-100/40 line-through">${product.originalPrice}</span>
+                  <span className="text-xl text-ivory-100/40 line-through">{formatCurrency(product.originalPrice)}</span>
                   <span className="badge bg-red-500/90 text-white">
-                    Save ${product.originalPrice - product.price}
+                    Save {formatCurrency(product.originalPrice - product.price)}
                   </span>
                 </>
               )}

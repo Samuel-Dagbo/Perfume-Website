@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatCurrency } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -83,10 +84,10 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-3 mb-6">
-                  <span className="text-3xl font-serif text-ivory-100">${product.price}</span>
+                  <span className="text-3xl font-serif text-ivory-100">{formatCurrency(product.price)}</span>
                   {product.originalPrice && product.originalPrice > product.price && (
                     <>
-                      <span className="text-lg text-ivory-100/40 line-through">${product.originalPrice}</span>
+                      <span className="text-lg text-ivory-100/40 line-through">{formatCurrency(product.originalPrice)}</span>
                       <span className="badge bg-red-500/20 text-red-400 border border-red-500/30">
                         -{Math.round((1 - product.price/product.originalPrice) * 100)}% OFF
                       </span>
@@ -291,11 +292,11 @@ const ProductCard = ({ product }) => {
             {/* Price */}
             <div className="flex items-center gap-3">
               <span className="text-xl font-serif text-ivory-100">
-                ${product.price}
+                {formatCurrency(product.price)}
               </span>
               {product.originalPrice && (
                 <span className="text-ivory-100/40 line-through text-sm">
-                  ${product.originalPrice}
+                  {formatCurrency(product.originalPrice)}
                 </span>
               )}
             </div>

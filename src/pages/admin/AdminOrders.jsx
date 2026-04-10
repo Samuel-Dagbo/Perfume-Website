@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
+import { formatCurrency } from '../../utils/currency';
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -239,7 +240,7 @@ const AdminOrders = () => {
                       {/* Total & Actions */}
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <p className="text-2xl font-serif text-gold-300">${order.total?.toFixed(2)}</p>
+                          <p className="text-2xl font-serif text-gold-300">{formatCurrency(order.total)}</p>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -369,7 +370,7 @@ const AdminOrders = () => {
                           <p className="text-ivory-100 font-medium truncate">{item.name}</p>
                           <p className="text-ivory-100/50 text-sm font-light">Qty: {item.quantity}</p>
                         </div>
-                        <p className="text-gold-300 font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="text-gold-300 font-medium">{formatCurrency(item.price * item.quantity)}</p>
                       </div>
                     ))}
                   </div>
@@ -392,19 +393,19 @@ const AdminOrders = () => {
                 <div className="border-t border-ivory-100/10 pt-4 space-y-2">
                   <div className="flex justify-between text-ivory-100/70 font-light">
                     <span>Subtotal</span>
-                    <span>${(selectedOrder.total - (selectedOrder.shippingCost || 0) - (selectedOrder.tax || 0)).toFixed(2)}</span>
+                    <span>{formatCurrency(selectedOrder.total - (selectedOrder.shippingCost || 0) - (selectedOrder.tax || 0))}</span>
                   </div>
                   <div className="flex justify-between text-ivory-100/70 font-light">
                     <span>Shipping</span>
-                    <span>${(selectedOrder.shippingCost || 0).toFixed(2)}</span>
+                    <span>{formatCurrency(selectedOrder.shippingCost || 0)}</span>
                   </div>
                   <div className="flex justify-between text-ivory-100/70 font-light">
                     <span>Tax</span>
-                    <span>${(selectedOrder.tax || 0).toFixed(2)}</span>
+                    <span>{formatCurrency(selectedOrder.tax || 0)}</span>
                   </div>
                   <div className="flex justify-between text-xl font-serif text-ivory-100 pt-2 border-t border-ivory-100/10">
                     <span>Total</span>
-                    <span className="text-gold-300">${selectedOrder.total?.toFixed(2)}</span>
+                    <span className="text-gold-300">{formatCurrency(selectedOrder.total)}</span>
                   </div>
                 </div>
 

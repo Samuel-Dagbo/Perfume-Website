@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
+import { formatCurrency } from '../../utils/currency';
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -380,9 +381,9 @@ const AdminProducts = () => {
 
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <span className="text-xl font-serif text-gold-300">${product.price?.toFixed(2)}</span>
+                          <span className="text-xl font-serif text-gold-300">{formatCurrency(product.price)}</span>
                           {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="text-ivory-100/40 line-through text-sm ml-2">${product.originalPrice.toFixed(2)}</span>
+                            <span className="text-ivory-100/40 line-through text-sm ml-2">{formatCurrency(product.originalPrice)}</span>
                           )}
                         </div>
                         <div className="text-right">

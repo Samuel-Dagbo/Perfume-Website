@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { formatCurrency } from '../../utils/currency';
 import api from '../../utils/api';
 
 const Checkout = () => {
@@ -334,7 +335,7 @@ const Checkout = () => {
                             Qty: {item.quantity}
                           </p>
                           <p className="text-gold-300 font-light mt-1">
-                            ${(item.product.price * item.quantity).toFixed(2)}
+                            {formatCurrency(item.product.price * item.quantity)}
                           </p>
                         </div>
                       </div>
@@ -344,7 +345,7 @@ const Checkout = () => {
                   <div className="space-y-3 pb-6 border-b border-ivory-100/10">
                     <div className="flex justify-between text-ivory-100/70 font-light text-sm">
                       <span>Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>{formatCurrency(subtotal)}</span>
                     </div>
                     {discount > 0 && (
                       <div className="flex justify-between text-emerald-400 font-light text-sm">
@@ -360,27 +361,27 @@ const Checkout = () => {
                             </svg>
                           </button>
                         </span>
-                        <span>-${discount.toFixed(2)}</span>
+                        <span>-{formatCurrency(discount)}</span>
                       </div>
                     )}
                     <div className="flex justify-between text-ivory-100/70 font-light text-sm">
                       <span>Shipping</span>
-                      <span>{shipping === 0 ? <span className="text-gold-300">Free</span> : `$${shipping.toFixed(2)}`}</span>
+                      <span>{shipping === 0 ? <span className="text-gold-300">Free</span> : formatCurrency(shipping)}</span>
                     </div>
                     <div className="flex justify-between text-ivory-100/70 font-light text-sm">
                       <span>Tax (8%)</span>
-                      <span>${tax.toFixed(2)}</span>
+                      <span>{formatCurrency(tax)}</span>
                     </div>
                     <div className="flex justify-between text-lg font-serif text-ivory-100 pt-3 border-t border-ivory-100/10">
                       <span>Total</span>
-                      <span className="text-gold-300">${total.toFixed(2)}</span>
+                      <span className="text-gold-300">{formatCurrency(total)}</span>
                     </div>
                   </div>
 
                   {subtotal < 100 && (
                     <div className="mt-4 p-4 bg-charcoal-200/50 rounded-xl">
                       <p className="text-xs text-ivory-100/60 font-light text-center">
-                        Add ${(100 - subtotal).toFixed(2)} more for <span className="text-gold-300">FREE shipping</span>
+                        Add {formatCurrency(100 - subtotal)} more for <span className="text-gold-300">FREE shipping</span>
                       </p>
                     </div>
                   )}
@@ -413,7 +414,7 @@ const Checkout = () => {
                           <p className="text-emerald-400 text-sm font-medium">{appliedCoupon.code}</p>
                           <p className="text-ivory-100/50 text-xs">{appliedCoupon.description}</p>
                         </div>
-                        <span className="text-emerald-400 font-medium">-${appliedCoupon.discount.toFixed(2)}</span>
+                        <span className="text-emerald-400 font-medium">-{formatCurrency(appliedCoupon.discount)}</span>
                       </div>
                     </div>
                   )}

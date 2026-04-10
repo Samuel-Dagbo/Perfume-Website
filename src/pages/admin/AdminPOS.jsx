@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
+import { formatCurrency } from '../../utils/currency';
 
 const AdminPOS = () => {
   const [products, setProducts] = useState([]);
@@ -279,7 +280,7 @@ const AdminPOS = () => {
                         </div>
                         <p className="text-ivory-100 font-medium text-sm line-clamp-1">{product.name}</p>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-gold-300 font-medium">${product.price?.toFixed(2)}</span>
+                          <span className="text-gold-300 font-medium">{formatCurrency(product.price)}</span>
                           {inCart && (
                             <span className="px-2 py-0.5 bg-gold-300/20 text-gold-300 text-xs rounded-full">
                               {inCart.quantity} in cart
@@ -352,7 +353,7 @@ const AdminPOS = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-ivory-100 font-medium text-sm truncate">{item.name}</p>
-                          <p className="text-xs text-ivory-100/40">${item.price?.toFixed(2)} each</p>
+                          <p className="text-xs text-ivory-100/40">{formatCurrency(item.price)} each</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -392,15 +393,15 @@ const AdminPOS = () => {
               <div className="p-5 border-t border-ivory-100/10 space-y-3">
                 <div className="flex justify-between text-ivory-100/70 font-light text-sm">
                   <span>Subtotal</span>
-                  <span>${getSubtotal().toFixed(2)}</span>
+                  <span>{formatCurrency(getSubtotal())}</span>
                 </div>
                 <div className="flex justify-between text-ivory-100/70 font-light text-sm">
                   <span>Tax (8%)</span>
-                  <span>${getTax().toFixed(2)}</span>
+                  <span>{formatCurrency(getTax())}</span>
                 </div>
                 <div className="flex justify-between text-xl font-serif text-ivory-100 pt-3 border-t border-ivory-100/10">
                   <span>Total</span>
-                  <span className="text-gold-300">${getTotal().toFixed(2)}</span>
+                  <span className="text-gold-300">{formatCurrency(getTotal())}</span>
                 </div>
               </div>
 

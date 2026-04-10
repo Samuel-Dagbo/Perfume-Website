@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatCurrency } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 
 const FREE_SHIPPING_THRESHOLD = 100;
@@ -62,7 +63,7 @@ const CartSidebar = () => {
               <div className="px-6 py-4 bg-gold-300/5 border-b border-ivory-100/10">
                 <div className="flex items-center justify-between text-xs text-ivory-100/70 mb-2">
                   <span>Free shipping progress</span>
-                  <span className="text-gold-300 font-medium">${amountToFreeShipping.toFixed(2)} away</span>
+                  <span className="text-gold-300 font-medium">{formatCurrency(amountToFreeShipping)} away</span>
                 </div>
                 <div className="h-1.5 bg-charcoal-100/50 rounded-full overflow-hidden">
                   <motion.div
@@ -142,7 +143,7 @@ const CartSidebar = () => {
 
                       <div className="flex items-center gap-3">
                         <span className="text-ivory-100 font-medium">
-                          ${(item.product.price * item.quantity).toFixed(2)}
+                          {formatCurrency(item.product.price * item.quantity)}
                         </span>
                         <button
                           onClick={() => removeFromCart(item.product._id)}
@@ -163,7 +164,7 @@ const CartSidebar = () => {
             <div className="border-t border-ivory-100/10 p-6 space-y-4 bg-charcoal-200/50">
               <div className="flex justify-between items-center">
                 <span className="text-ivory-100/60">Subtotal</span>
-                <span className="text-xl font-serif text-ivory-100">${subtotal.toFixed(2)}</span>
+                <span className="text-xl font-serif text-ivory-100">{formatCurrency(subtotal)}</span>
               </div>
 
               <div className="flex justify-between text-xs text-ivory-100/40">
@@ -177,7 +178,7 @@ const CartSidebar = () => {
                   onClick={() => document.dispatchEvent(new CustomEvent('toggle-cart'))}
                   className="btn-primary w-full text-center rounded-xl block"
                 >
-                  Checkout — ${subtotal.toFixed(2)}
+                  Checkout — {formatCurrency(subtotal)}
                 </Link>
                 <button
                   onClick={clearCart}

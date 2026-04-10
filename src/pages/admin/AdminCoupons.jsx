@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
+import { formatCurrency } from '../../utils/currency';
 
 const AdminCoupons = () => {
   const [coupons, setCoupons] = useState([]);
@@ -254,12 +255,12 @@ const AdminCoupons = () => {
                   <span className="text-ivory-100 font-medium">
                     {coupon.discountType === 'percentage'
                       ? `${coupon.discountValue}%`
-                      : `$${coupon.discountValue}`}
+                      : formatCurrency(coupon.discountValue)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-ivory-100/50 text-sm">Min. Order</span>
-                  <span className="text-ivory-100">${coupon.minOrderAmount || 0}</span>
+                  <span className="text-ivory-100">{formatCurrency(coupon.minOrderAmount || 0)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-ivory-100/50 text-sm">Used</span>
