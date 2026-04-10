@@ -66,8 +66,7 @@ const LocationPicker = ({ isOpen, onClose, onSelect, initialAddress }) => {
       }, 100);
     }
 
-    return () => {
-    };
+    return () => {};
   }, [isOpen]);
 
   useEffect(() => {
@@ -130,92 +129,92 @@ const LocationPicker = ({ isOpen, onClose, onSelect, initialAddress }) => {
         className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[150]"
         onClick={onClose}
       />
-      <div className="fixed inset-0 z-[151] flex items-center justify-center p-4 pointer-events-none">
-        <div 
-          className="bg-charcoal-100 border border-ivory-100/10 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl pointer-events-auto"
-          onClick={e => e.stopPropagation()}
-        >
-          <div className="bg-charcoal-200/50 border-b border-ivory-100/10 p-4 flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-serif text-ivory-100">Select Delivery Location</h3>
-              <p className="text-sm text-ivory-100/50">Click on the map or search for your address</p>
+      <div 
+        className="fixed inset-4 lg:inset-10 z-[151] flex flex-col bg-charcoal-100 border border-ivory-100/10 rounded-2xl shadow-2xl overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="bg-charcoal-200/50 border-b border-ivory-100/10 p-4 flex items-center justify-between flex-shrink-0">
+          <div>
+            <h3 className="text-lg font-serif text-ivory-100">Select Delivery Location</h3>
+            <p className="text-sm text-ivory-100/50">Click on the map or search for your address</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-ivory-100/50 hover:text-ivory-100 hover:bg-charcoal-100 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-4 border-b border-ivory-100/10 flex-shrink-0">
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                placeholder="Search for a location in Ghana..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="w-full px-4 py-3 pl-10 bg-charcoal-200/50 border border-ivory-100/10 text-ivory-100 rounded-xl focus:outline-none focus:border-gold-300/50"
+              />
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ivory-100/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
             <button
-              onClick={onClose}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-ivory-100/50 hover:text-ivory-100 hover:bg-charcoal-100 transition-colors"
+              onClick={handleSearch}
+              className="px-6 py-3 bg-gold-300 text-charcoal-300 rounded-xl hover:bg-gold-200 transition-colors font-medium"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Search
             </button>
           </div>
+        </div>
 
-          <div className="p-4 border-b border-ivory-100/10">
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  placeholder="Search for a location in Ghana..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="w-full px-4 py-3 pl-10 bg-charcoal-200/50 border border-ivory-100/10 text-ivory-100 rounded-xl focus:outline-none focus:border-gold-300/50"
-                />
-                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ivory-100/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <div className="relative flex-1 min-h-0">
+          <div ref={mapRef} className="absolute inset-0" />
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
+            <div className="px-4 py-2 bg-charcoal-100/90 backdrop-blur-sm rounded-xl text-sm text-ivory-100/70 shadow-lg border border-ivory-100/10 flex items-center gap-2">
+              <svg className="w-4 h-4 text-gold-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Click on map to select location</span>
+            </div>
+          </div>
+        </div>
+
+        {selectedAddress && (
+          <div className="p-4 border-t border-ivory-100/10 bg-charcoal-200/30 flex-shrink-0">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <button
-                onClick={handleSearch}
-                className="px-6 py-3 bg-gold-300 text-charcoal-300 rounded-xl hover:bg-gold-200 transition-colors font-medium"
-              >
-                Search
-              </button>
-            </div>
-          </div>
-
-          <div className="relative" style={{ height: '400px' }}>
-            <div ref={mapRef} className="w-full h-full" />
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
-              <div className="px-4 py-2 bg-charcoal-100/90 backdrop-blur-sm rounded-xl text-sm text-ivory-100/70 shadow-lg border border-ivory-100/10">
-                <span className="text-gold-300 mr-2">✦</span>
-                Click anywhere on the map to select your location
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-ivory-100/50 mb-1">Selected Location:</p>
+                <p className="text-ivory-100 text-sm">{selectedAddress}</p>
               </div>
             </div>
           </div>
+        )}
 
-          {selectedAddress && (
-            <div className="p-4 border-t border-ivory-100/10 bg-charcoal-200/30">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-ivory-100/50 mb-1">Selected Location:</p>
-                  <p className="text-ivory-100">{selectedAddress}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="p-4 bg-charcoal-200/50 border-t border-ivory-100/10 flex gap-3">
-            <button
-              onClick={onClose}
-              className="flex-1 py-3 border border-ivory-100/20 text-ivory-100/70 rounded-xl hover:bg-charcoal-100 transition-colors font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirm}
-              disabled={!selectedAddress}
-              className="flex-1 py-3 bg-gold-300 text-charcoal-300 rounded-xl hover:bg-gold-200 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Confirm Location
-            </button>
-          </div>
+        <div className="p-4 bg-charcoal-200/50 border-t border-ivory-100/10 flex gap-3 flex-shrink-0">
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 border border-ivory-100/20 text-ivory-100/70 rounded-xl hover:bg-charcoal-100 transition-colors font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={!selectedAddress}
+            className="flex-1 py-3 bg-gold-300 text-charcoal-300 rounded-xl hover:bg-gold-200 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Confirm Location
+          </button>
         </div>
       </div>
     </>
