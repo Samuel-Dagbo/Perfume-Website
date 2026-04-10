@@ -332,8 +332,26 @@ const OrderDetailsModal = ({ order, details, loading, onClose, getTimelineSteps,
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {details.shippingAddress && (
                       <div className="p-4 bg-charcoal-200/30 rounded-xl">
-                        <h4 className="text-xs text-ivory-100/50 uppercase tracking-wider mb-2">Delivery Address</h4>
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h4 className="text-xs text-ivory-100/50 uppercase tracking-wider">Delivery Address</h4>
+                          {details.shippingAddress.navigationUrl && (
+                            <a
+                              href={details.shippingAddress.navigationUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-2 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors text-xs font-medium flex items-center gap-1"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                              </svg>
+                              Navigate
+                            </a>
+                          )}
+                        </div>
                         <p className="text-ivory-100 text-sm">{details.shippingAddress.fullName}</p>
+                        {details.shippingAddress.placeName && (
+                          <p className="text-gold-300 text-sm font-medium">{details.shippingAddress.placeName}</p>
+                        )}
                         <p className="text-ivory-100/70 text-sm">{details.shippingAddress.street}</p>
                         <p className="text-ivory-100/70 text-sm">{details.shippingAddress.city}, {details.shippingAddress.state}</p>
                         <p className="text-ivory-100/70 text-sm">{details.shippingAddress.phone}</p>

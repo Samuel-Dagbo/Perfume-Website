@@ -359,14 +359,37 @@ const AdminOrders = () => {
                     {/* Shipping Address */}
                     {orderDetails.shippingAddress && (
                       <div className="bg-charcoal-200/30 rounded-xl p-4">
-                        <p className="text-ivory-100/50 text-xs uppercase tracking-wide mb-3">Shipping Address</p>
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                          <p className="text-ivory-100/50 text-xs uppercase tracking-wide">Shipping Address</p>
+                          {orderDetails.shippingAddress.navigationUrl && (
+                            <a
+                              href={orderDetails.shippingAddress.navigationUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors text-xs font-medium flex items-center gap-1.5"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                              </svg>
+                              Navigate
+                            </a>
+                          )}
+                        </div>
                         <p className="text-ivory-100 font-medium">{orderDetails.shippingAddress.fullName}</p>
+                        {orderDetails.shippingAddress.placeName && (
+                          <p className="text-gold-300 text-sm font-medium mt-1">{orderDetails.shippingAddress.placeName}</p>
+                        )}
                         <p className="text-ivory-100/70 text-sm">{orderDetails.shippingAddress.street}</p>
                         <p className="text-ivory-100/70 text-sm">
                           {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} {orderDetails.shippingAddress.zipCode}
                         </p>
                         <p className="text-ivory-100/70 text-sm">{orderDetails.shippingAddress.country}</p>
-                        <p className="text-ivory-100/70 text-sm mt-2">{orderDetails.shippingAddress.phone}</p>
+                        <p className="text-ivory-100/70 text-sm mt-2 flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
+                          {orderDetails.shippingAddress.phone}
+                        </p>
                       </div>
                     )}
 

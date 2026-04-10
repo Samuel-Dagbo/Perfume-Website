@@ -228,8 +228,8 @@ const Checkout = () => {
     }
   };
 
-  const handleLocationSelect = (address) => {
-    const parts = address.split(',').map(p => p.trim()).filter(Boolean);
+  const handleLocationSelect = (fullAddress, placeName, googleMapsUrl) => {
+    const parts = fullAddress.split(',').map(p => p.trim()).filter(Boolean);
     
     let street = '';
     let city = '';
@@ -250,7 +250,9 @@ const Checkout = () => {
       ...prev,
       street: street || prev.street,
       city: city || prev.city,
-      state: state || prev.state
+      state: state || prev.state,
+      placeName: placeName || prev.placeName,
+      navigationUrl: googleMapsUrl || prev.navigationUrl
     }));
   };
 
