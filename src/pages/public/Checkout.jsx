@@ -10,8 +10,11 @@ const Checkout = () => {
   const { cart, getCartTotal, clearCart } = useCart();
   const { isAuthenticated, user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [couponLoading, setCouponLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const [shippingAddress, setShippingAddress] = useState({
     fullName: user?.name || '',
@@ -79,8 +82,39 @@ const Checkout = () => {
 
   const subtotal = getCartTotal();
   const shipping = subtotal >= 100 ? 0 : 10;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const discount = appliedCoupon?.discount || 0;
+  const tax = (subtotal - discount) * 0.08;
+  const total = subtotal - discount + shipping + tax;
+
+  const handleApplyCoupon = async (e) => {
+    e.preventDefault();
+    if (!couponCode.trim()) return;
+    
+    setCouponLoading(true);
+    setError('');
+    
+    try {
+      const response = await api.post('/coupons/validate', {
+        code: couponCode,
+        subtotal
+      });
+      
+      if (response.data.success) {
+        setAppliedCoupon(response.data.coupon);
+        setCouponCode('');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid coupon code');
+      setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+  
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +132,8 @@ const Checkout = () => {
           image: item.product.images?.[0]?.url || ''
         })),
         shippingAddress,
-        paymentMethod: 'cod'
+        paymentMethod: 'cod',
+        couponCode: appliedCoupon?.code
       });
 
       if (response.data.success) {
@@ -311,6 +346,23 @@ const Checkout = () => {
                       <span>Subtotal</span>
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
+                    {discount > 0 && (
+                      <div className="flex justify-between text-emerald-400 font-light text-sm">
+                        <span className="flex items-center gap-1">
+                          <span>Discount</span>
+                          <button
+                            type="button"
+                            onClick={handleRemoveCoupon}
+                            className="ml-1 text-ivory-100/40 hover:text-red-400 transition-colors"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </span>
+                        <span>-${discount.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-ivory-100/70 font-light text-sm">
                       <span>Shipping</span>
                       <span>{shipping === 0 ? <span className="text-gold-300">Free</span> : `$${shipping.toFixed(2)}`}</span>
@@ -330,6 +382,39 @@ const Checkout = () => {
                       <p className="text-xs text-ivory-100/60 font-light text-center">
                         Add ${(100 - subtotal).toFixed(2)} more for <span className="text-gold-300">FREE shipping</span>
                       </p>
+                    </div>
+                  )}
+
+                  {!appliedCoupon && (
+                    <form onSubmit={handleApplyCoupon} className="mt-4">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                          placeholder="Coupon code"
+                          className="flex-1 px-3 py-2 bg-charcoal-200/50 border border-ivory-100/10 text-ivory-100 placeholder-charcoal-400 text-sm focus:outline-none focus:border-gold-300 transition-colors rounded-lg"
+                        />
+                        <button
+                          type="submit"
+                          disabled={couponLoading || !couponCode.trim()}
+                          className="px-4 py-2 bg-gold-300/20 border border-gold-300/30 text-gold-300 text-sm font-medium rounded-lg hover:bg-gold-300/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {couponLoading ? '...' : 'Apply'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {appliedCoupon && (
+                    <div className="mt-4 p-3 bg-emerald-900/20 border border-emerald-500/30 rounded-xl">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-emerald-400 text-sm font-medium">{appliedCoupon.code}</p>
+                          <p className="text-ivory-100/50 text-xs">{appliedCoupon.description}</p>
+                        </div>
+                        <span className="text-emerald-400 font-medium">-${appliedCoupon.discount.toFixed(2)}</span>
+                      </div>
                     </div>
                   )}
 

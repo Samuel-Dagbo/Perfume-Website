@@ -22,6 +22,7 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminInventory from './pages/admin/AdminInventory';
+import AdminCoupons from './pages/admin/AdminCoupons';
 import AdminPOS from './pages/admin/AdminPOS';
 import Checkout from './pages/public/Checkout';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -60,6 +61,7 @@ function App() {
                 <Route path="admin/orders" element={<AdminOrders />} />
                 <Route path="admin/users" element={<AdminUsers />} />
                 <Route path="admin/inventory" element={<AdminInventory />} />
+                <Route path="admin/coupons" element={<AdminCoupons />} />
                 <Route path="admin/pos" element={<AdminPOS />} />
               </Route>
             </Route>
