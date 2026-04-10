@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { formatCurrency } from '../../utils/currency';
 import api from '../../utils/api';
+import useAnalytics from '../../hooks/useAnalytics';
 
 const TAX_RATE = 0.03;
 
@@ -19,6 +20,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
   const { isAuthenticated, user } = useAuth();
+  const { trackCheckoutStarted, trackOrderCompleted } = useAnalytics();
   const [loading, setLoading] = useState(false);
   const [couponLoading, setCouponLoading] = useState(false);
   const [error, setError] = useState('');
@@ -145,6 +147,7 @@ const Checkout = () => {
     
     if (currentStep === 1) {
       setCurrentStep(2);
+      trackCheckoutStarted({ paymentMethod: selectedPayment, cartValue: getCartTotal() });
       return;
     }
 
@@ -166,6 +169,11 @@ const Checkout = () => {
       });
 
       if (response.data.success) {
+        trackOrderCompleted(response.data.order._id, { 
+          total: response.data.order.total,
+          items: cart.length,
+          paymentMethod: selectedPayment
+        });
         setOrderSuccess(response.data.order);
         clearCart();
       } else {

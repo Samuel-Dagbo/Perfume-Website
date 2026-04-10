@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
 import { useCart } from '../../context/CartContext';
 import ProductCard from '../../components/product/ProductCard';
+import { usePageTracking } from '../../hooks/useAnalytics';
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
@@ -11,6 +12,8 @@ const Shop = () => {
   const [pagination, setPagination] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToCart } = useCart();
+
+  usePageTracking();
 
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
