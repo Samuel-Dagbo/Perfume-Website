@@ -4,13 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 
-const FREE_SHIPPING_THRESHOLD = 500;
-
 const CartSidebar = () => {
   const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
   const subtotal = getCartTotal();
-  const shippingProgress = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
-  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
   return (
     <AnimatePresence>
@@ -57,33 +53,6 @@ const CartSidebar = () => {
                 </svg>
               </button>
             </div>
-
-            {/* Free Shipping Progress */}
-            {subtotal < FREE_SHIPPING_THRESHOLD && (
-              <div className="px-6 py-4 bg-gold-300/5 border-b border-ivory-100/10">
-                <div className="flex items-center justify-between text-xs text-ivory-100/70 mb-2">
-                  <span>Free shipping progress</span>
-                  <span className="text-gold-300 font-medium">{formatCurrency(amountToFreeShipping)} away</span>
-                </div>
-                <div className="h-1.5 bg-charcoal-100/50 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${shippingProgress}%` }}
-                    transition={{ duration: 0.5, ease: 'easeOut' }}
-                    className="h-full bg-gradient-to-r from-gold-300 to-gold-200 rounded-full"
-                  />
-                </div>
-              </div>
-            )}
-
-            {subtotal >= FREE_SHIPPING_THRESHOLD && (
-              <div className="px-6 py-4 bg-emerald-500/10 border-b border-ivory-100/10 flex items-center gap-2">
-                <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-emerald-400 text-sm font-medium">You qualify for free shipping!</span>
-              </div>
-            )}
 
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -165,11 +134,6 @@ const CartSidebar = () => {
               <div className="flex justify-between items-center">
                 <span className="text-ivory-100/60">Subtotal</span>
                 <span className="text-xl font-serif text-ivory-100">{formatCurrency(subtotal)}</span>
-              </div>
-
-              <div className="flex justify-between text-xs text-ivory-100/40">
-                <span>Shipping</span>
-                <span>{subtotal >= FREE_SHIPPING_THRESHOLD ? 'Free' : 'Calculated at checkout'}</span>
               </div>
 
               <div className="pt-4 space-y-3">

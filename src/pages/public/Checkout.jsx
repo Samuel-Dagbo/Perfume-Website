@@ -6,7 +6,6 @@ import { useAuth } from '../../context/AuthContext';
 import { formatCurrency } from '../../utils/currency';
 import api from '../../utils/api';
 
-const FREE_SHIPPING_THRESHOLD = 500;
 const TAX_RATE = 0.03;
 
 const Checkout = () => {
@@ -81,10 +80,10 @@ const Checkout = () => {
   }
 
   const subtotal = getCartTotal();
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 25;
+  const shipping = 0;
   const discount = appliedCoupon?.discount || 0;
   const tax = (subtotal - discount) * TAX_RATE;
-  const total = subtotal - discount + shipping + tax;
+  const total = subtotal - discount + tax;
 
   const validateForm = () => {
     const errors = {};
@@ -473,10 +472,6 @@ const Checkout = () => {
                       </div>
                     )}
                     <div className="flex justify-between text-ivory-100/70 font-light text-sm">
-                      <span>Shipping</span>
-                      <span>{shipping === 0 ? <span className="text-emerald-400">Free</span> : formatCurrency(shipping)}</span>
-                    </div>
-                    <div className="flex justify-between text-ivory-100/70 font-light text-sm">
                       <span>Tax (3%)</span>
                       <span>{formatCurrency(tax)}</span>
                     </div>
@@ -485,19 +480,6 @@ const Checkout = () => {
                       <span className="text-gold-300">{formatCurrency(total)}</span>
                     </div>
                   </div>
-
-                  {/* Free Shipping Progress */}
-                  {subtotal < FREE_SHIPPING_THRESHOLD && (
-                    <div className="mt-4 p-4 bg-gold-300/5 border border-gold-300/20 rounded-xl">
-                      <p className="text-xs text-ivory-100/60 mb-2">Add {formatCurrency(FREE_SHIPPING_THRESHOLD - subtotal)} more for FREE shipping</p>
-                      <div className="h-1.5 bg-charcoal-200/50 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-gold-300 rounded-full transition-all"
-                          style={{ width: `${Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
 
                   {/* Coupon */}
                   <div className="mt-6">
