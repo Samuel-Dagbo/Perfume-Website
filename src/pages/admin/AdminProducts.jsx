@@ -9,6 +9,9 @@ const AdminProducts = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -140,6 +143,9 @@ const AdminProducts = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    setSuccessMessage('');
+    setErrorMessage('');
     
     const submitData = {
       ...formData,
@@ -147,22 +153,29 @@ const AdminProducts = () => {
       stockQuantity: parseInt(formData.stockQuantity),
       lowStockThreshold: parseInt(formData.lowStockThreshold),
       price: parseFloat(formData.price),
-      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null
+      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
+      images: formData.images.map(img => ({ url: img.url, public_id: img.public_id }))
     };
 
     try {
       if (editingProduct) {
         await api.put(`/products/${editingProduct._id}`, submitData);
+        setSuccessMessage('Product updated successfully!');
       } else {
         await api.post('/products', submitData);
+        setSuccessMessage('Product created successfully!');
       }
-      setShowModal(false);
-      setEditingProduct(null);
-      fetchProducts();
-      resetForm();
+      setTimeout(() => {
+        setShowModal(false);
+        setEditingProduct(null);
+        fetchProducts();
+        resetForm();
+      }, 1500);
     } catch (error) {
       console.error('Failed to save product:', error);
-      alert(error.response?.data?.message || 'Failed to save product');
+      setErrorMessage(error.response?.data?.message || error.message || 'Failed to save product');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -447,7 +460,7 @@ const AdminProducts = () => {
                       />
                     </label>
                   </div>
-                  <p className="text-xs text-ivory-100/40">First image will be the main product image. Max 5 images.</p>
+                  <p className="text-xs text-ivory-100/40">First image will be the main product image. Max 5 images. (Optional - can add later)</p>
                 </div>
 
                 {/* Basic Info */}
@@ -649,13 +662,33 @@ const AdminProducts = () => {
                   </label>
                 </div>
 
+                {/* Success/Error Messages */}
+                {successMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-emerald-400 text-center"
+                  >
+                    {successMessage}
+                  </motion.div>
+                )}
+                {errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 text-center"
+                  >
+                    {errorMessage}
+                  </motion.div>
+                )}
+
                 {/* Actions */}
                 <div className="flex gap-4 pt-4 border-t border-ivory-100/10">
                   <button type="button" onClick={() => setShowModal(false)} className="flex-1 btn-secondary rounded-xl">
                     Cancel
                   </button>
-                  <button type="submit" className="flex-1 btn-primary rounded-xl">
-                    {editingProduct ? 'Save Changes' : 'Add Product'}
+                  <button type="submit" disabled={submitting} className="flex-1 btn-primary rounded-xl disabled:opacity-50">
+                    {submitting ? 'Saving...' : editingProduct ? 'Save Changes' : 'Add Product'}
                   </button>
                 </div>
               </form>
