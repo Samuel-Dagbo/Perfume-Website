@@ -75,7 +75,7 @@ const Header = () => {
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-6">
               {/* Search - Desktop */}
               <button className="hidden lg:block text-ivory-100/70 hover:text-ivory-100 transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,7 +175,20 @@ const Header = () => {
               transition={{ duration: 0.3 }}
               className="lg:hidden bg-charcoal-300/98 backdrop-blur-xl border-t border-ivory-100/10"
             >
-              <div className="container mx-auto px-6 py-8">
+              <div className="container mx-auto px-6 py-6 space-y-6">
+                {/* Mobile Search */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    className="w-full px-4 py-3 bg-charcoal-200/50 border border-ivory-100/10 text-ivory-100 placeholder-charcoal-400 rounded-xl focus:outline-none focus:border-gold-300"
+                  />
+                  <svg className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-ivory-100/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+
+                {/* Mobile Nav Links */}
                 <nav className="space-y-1">
                   {navLinks.map((link) => (
                     <Link
@@ -191,17 +204,50 @@ const Header = () => {
                     </Link>
                   ))}
                 </nav>
-                
-                {!isAuthenticated && (
-                  <div className="mt-6 pt-6 border-t border-ivory-100/10">
-                    <Link 
-                      to="/login" 
-                      className="block text-sm text-ivory-100/80 hover:text-ivory-100"
-                    >
-                      Sign In / Register
-                    </Link>
-                  </div>
-                )}
+
+                {/* Mobile User Section */}
+                <div className="pt-4 border-t border-ivory-100/10">
+                  {isAuthenticated ? (
+                    <div className="space-y-1">
+                      <p className="text-xs text-ivory-100/40 uppercase tracking-wide mb-3 px-1">Account</p>
+                      <Link to="/dashboard" className="flex items-center py-3 text-sm text-ivory-100/80 border-b border-ivory-100/10">
+                        Dashboard
+                      </Link>
+                      <Link to="/profile" className="flex items-center py-3 text-sm text-ivory-100/80 border-b border-ivory-100/10">
+                        Profile
+                      </Link>
+                      <Link to="/orders" className="flex items-center py-3 text-sm text-ivory-100/80 border-b border-ivory-100/10">
+                        Orders
+                      </Link>
+                      {user?.role === 'admin' && (
+                        <Link to="/admin" className="flex items-center py-3 text-sm text-gold-300 border-b border-ivory-100/10">
+                          Admin Panel
+                        </Link>
+                      )}
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center py-3 text-sm text-ivory-100/80"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Link 
+                        to="/login" 
+                        className="block w-full py-3 text-center text-sm bg-gold-300 text-charcoal-300 rounded-xl font-medium"
+                      >
+                        Sign In
+                      </Link>
+                      <Link 
+                        to="/signup" 
+                        className="block w-full py-3 text-center text-sm border border-ivory-100/20 text-ivory-100/80 rounded-xl"
+                      >
+                        Create Account
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
