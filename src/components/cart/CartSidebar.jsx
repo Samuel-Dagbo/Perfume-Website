@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 
-const FREE_SHIPPING_THRESHOLD = 100;
+const FREE_SHIPPING_THRESHOLD = 500;
 
 const CartSidebar = () => {
   const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
